@@ -30,9 +30,11 @@ Reutiliza el stack, la arquitectura y la metodología de `C:\Proyectos\Portfolio
 `cedecetest.vercel.app` (test, rama `test`, con `Disallow: /`). `npm run check` limpio y build
 de producción limpio en los tres idiomas. Detalles en [[modelo-de-ramas]].
 
-**Todavía no hay proyecto de Sanity**, y la web funciona igual sirviendo `content/` — es
-exactamente lo que la arquitectura contempla (ver [[contenido-dos-fuentes]]). Enchufarlo es el
-siguiente paso opcional, con los cuatro pasos del README de `develop`.
+**El panel está enchufado (2026-08-03, tarde).** Proyecto de Sanity `g848avm8`, dataset
+`production` público, los 66 documentos de `content/` importados, tres orígenes CORS, dos webhooks
+de revalidación y las variables de entorno en los dos proyectos de Vercel. **Falta desplegar:** una
+variable de entorno no hace nada hasta el siguiente despliegue, y el arreglo de `stripNulls` (punto
+13) sólo está en `develop`. Detalle en [[panel-de-sanity]].
 
 ## 2. Stack técnico
 
@@ -99,6 +101,11 @@ siguiente paso opcional, con los cuatro pasos del README de `develop`.
 12. **Un botón que promete una canción lleva a esa canción.** Los seis enlaces de Spotify de
     `content/releases.ts` iban al perfil del artista. Los nueve identificadores de álbum,
     verificados, están en [[enlaces-a-cada-lanzamiento]].
+13. **Los `null` de GROQ se quitan antes de validar** (`stripNulls` en `lib/content.ts`). zod acepta
+    `undefined` en un `.optional()` y rechaza `null`, y una proyección de GROQ devuelve `null` por
+    cada campo ausente. Sin eso el panel entero se descarta en silencio y la web se ve idéntica: es
+    el punto 8 de [[fallos-ya-pagados]]. **Y por eso enchufar el CMS no se verifica mirando la web,
+    sino comprobando que no haya líneas `[content]` en el log.**
 
 ## 4. Reglas del proyecto
 
@@ -147,6 +154,20 @@ Regla de oro: **el contexto nunca debe quedar desactualizado respecto al estado 
 proyecto.**
 
 ---
+
+_2026-08-03 (tarde, 2) — **el panel de Sanity queda en marcha**: proyecto `g848avm8`, dataset
+`production` público, 66 documentos importados de `content/`, tres orígenes CORS y los dos webhooks
+de revalidación con los tres disparadores. Lo que costó la sesión no fue montarlo, sino descubrir
+que **estaba montado y no mandaba nada**: GROQ devuelve `null` por cada campo ausente y zod lo
+rechaza, así que la validación fallaba por unos sesenta campos, `getContent()` se caía a `content/`
+como está diseñado, y la web se veía exactamente igual. Arreglado con `stripNulls()` en
+`lib/content.ts`; contado en el punto 8 de [[fallos-ya-pagados]]. De paso, el README pasa de cuatro
+pasos a cinco: **le faltaba el de CORS**, sin el cual el panel carga y no deja entrar. `typecheck`,
+`lint` y `build` limpios (el `build` ya leyendo de Sanity). Las variables de entorno están en los dos
+proyectos de Vercel, puestas por el navegador; **`form_input` sobre el interruptor «Sensitive» no
+sirve** —cambia el checkbox pero no el estado de React, y encima lo desincroniza—: hay que pulsarlo y
+comprobar con una captura antes de guardar. **Pendiente: promocionar a `test` y a `prod`**, porque
+una variable de entorno no hace nada hasta el siguiente despliegue._
 
 _2026-08-03 (tarde) — repaso de la composición y de los enlaces. La web se compone ahora **al
 eje** ([[composicion-centrada]]); lo que Luis veía «solapado» eran las tildes de las capitales de
