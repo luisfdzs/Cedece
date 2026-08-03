@@ -60,8 +60,8 @@ export function Gallery({ photos, locale }: { photos: PhotoType[]; locale: Local
 
       {/* En móvil el `hover` no existe, así que los créditos de arriba no se ven nunca. Los
           nombres se repiten aquí en una línea para que el crédito no dependa del ratón. */}
-      <p className="mt-6 text-xs text-[var(--color-paper-dim)]">
-        {ui.gallery.photoBy}{' '}
+      <p className="mx-auto mt-8 max-w-xl text-xs leading-relaxed text-[var(--color-paper-dim)]">
+        <span className="text-[var(--color-paper-mute)]">{ui.gallery.photoBy}</span>{' '}
         {[...new Set(photos.map((photo) => photo.credit).filter(Boolean))].join(' · ')}
       </p>
     </Section>
