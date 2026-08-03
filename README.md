@@ -101,25 +101,47 @@ concierto que nadie ha comprobado — de los ocho que constan, sólo uno trae d�
 
 ---
 
-## 4. Puesta en marcha del panel
+## 4. El panel: ya está en marcha
 
-Cuatro pasos. Mientras no se hagan, `/admin` explica esto mismo.
+**Hecho el 2026-08-03.** Proyecto de Sanity **`g848avm8`**, dataset `production` (público: la web
+lee sin token), con los 66 documentos de `content/` importados, los tres orígenes CORS, los dos
+webhooks de revalidación y las variables de entorno en los **dos** proyectos de Vercel. Lo único que
+falta es desplegar: ver «Pendiente», al final.
+
+Se deja aquí la receta entera porque es la que hay que repetir para montar otro entorno, y porque
+dos de los cinco pasos no son evidentes. Mientras no haya `projectId`, `/admin` explica esto mismo.
 
 1. Crear un proyecto en [sanity.io/manage](https://sanity.io/manage), dataset `production`.
 2. Copiar su `projectId` en `NEXT_PUBLIC_SANITY_PROJECT_ID` — en `.env.local` y en las variables de
    los **dos** proyectos de Vercel.
-3. Importar el contenido actual, para que el panel arranque con lo que ya se ve y no en blanco:
+3. **Dar de alta los orígenes CORS**, o el panel carga y no deja entrar:
+
+   ```bash
+   npx sanity cors add http://localhost:3000 --credentials
+   npx sanity cors add https://cedece.vercel.app --credentials
+   npx sanity cors add https://cedecetest.vercel.app --credentials
+   ```
+
+   `--credentials` no es opcional: el Studio se autentica con cookie, y sin ese permiso el login
+   falla en un origen que por lo demás parece bien configurado.
+
+4. Importar el contenido actual, para que el panel arranque con lo que ya se ve y no en blanco:
    ```bash
    npx sanity login
    npm run migrate:build     # content/ → scripts/migration/import.ndjson
    npm run migrate:import
    ```
-4. Crear el webhook de revalidación en **API › Webhooks**, apuntando a `/api/revalidate` de cada
+5. Crear el webhook de revalidación en **API › Webhooks**, apuntando a `/api/revalidate` de cada
    entorno, con el mismo secreto que `SANITY_REVALIDATE_SECRET`.
 
-> ⚠️ Si el webhook se crea **por API**, hay que hacer después un `PATCH` con
-> `rule: {on: ["create","update","delete"]}`. El `POST` no acepta `rule` y sin ese `PATCH` el
+> ⚠️ **El formulario del panel de Sanity trae marcado sólo «Create».** Hay que marcar también
+> «Update» y «Delete» a mano, o el webhook sólo avisa de documentos nuevos y editar una fecha no
+> refresca nada. Y si el webhook se crea **por API**, el equivalente es hacer después un `PATCH` con
+> `rule: {on: ["create","update","delete"]}`: el `POST` no acepta `rule` y sin ese `PATCH` el
 > webhook queda con buena pinta y **no se dispara nunca**.
+
+> ⚠️ **`npx sanity hooks create` no sirve para automatizar**: es interactivo y no acepta ni URL ni
+> secreto por bandera. `cors add`, `projects create` y `dataset import` sí.
 
 ---
 
@@ -145,6 +167,12 @@ test despliega `test` como su propia producción, así que allí `VERCEL_ENV` ta
 
 Por orden de lo que más aporta:
 
+- [ ] **Promocionar este cambio a `test` y a `prod`.** Las variables ya están en los dos proyectos
+      de Vercel, pero **una variable de entorno no hace nada hasta el siguiente despliegue**, y el
+      arreglo de `stripNulls` (ver punto 13 del CLAUDE.md) sólo está en `develop`. Hasta que se
+      promocione, los dos entornos siguen sirviendo `content/`: se ven idénticos, así que **no vale
+      mirar la web para saber si ha funcionado** — hay que mirar que no haya líneas `[content]` en el
+      log del build.
 - [ ] **El logotipo de verdad.** `components/layout/Logo.tsx` es una reconstrucción geométrica del
       monograma que se ve en el faldón del escenario. Hay que pedirle el SVG y cambiar **también**
       `app/(site)/[locale]/icon.tsx`.

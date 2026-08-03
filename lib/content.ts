@@ -69,7 +69,7 @@ export async function getContent(): Promise<Content> {
     // no se ha importado nada. No es un fallo, así que no se grita.
     if (!raw?.artist) return local
 
-    const parsed = contentSchema.safeParse(mergeWithLocal(raw))
+    const parsed = contentSchema.safeParse(mergeWithLocal(stripNulls(raw)))
     if (!parsed.success) {
       // Aquí sí: el panel tiene documentos y no cumplen el contrato. Se dice qué campo,
       // porque el mensaje de zod es lo único que va a tener quien lo arregle.
@@ -84,6 +84,40 @@ export async function getContent(): Promise<Content> {
     console.error('[content] No se pudo leer de Sanity; se sirve content/.', error)
     return local
   }
+}
+
+/**
+ * QUITA LOS `null` QUE DEVUELVE GROQ.
+ *
+ * Una proyección de GROQ devuelve `"campo": null` para cada campo que el documento no
+ * tiene, y zod distingue: un `.optional()` acepta `undefined` y **rechaza `null`**. Sin
+ * esto, un documento perfectamente correcto al que le falte el retrato, el correo de
+ * contratación o la portada del disco tira toda la validación al suelo.
+ *
+ * **Y el fallo no da error: da una web que parece bien.** Es el punto exacto donde se
+ * pagó. Al enchufar el panel, la validación fallaba por 60 campos ausentes, `getContent`
+ * se caía a `content/` como está diseñado, y la portada se veía idéntica — con el panel
+ * conectado, importado y sin mandar nada. El único rastro era una línea `[content]` en el
+ * log del build. Si algún día hay que depurar «edito en el panel y la web no cambia»,
+ * empezar por ahí.
+ *
+ * Se hace aquí y no en la consulta —`coalesce()` campo a campo— porque son casi cien
+ * campos opcionales repartidos en seis tipos, y olvidar uno reproduce el fallo entero.
+ * En este contrato **ningún campo es `nullable`** (ver `content/schema.ts`), así que un
+ * `null` de Sanity siempre significa «no está», nunca «vale null».
+ */
+function stripNulls<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value.filter((item) => item !== null).map(stripNulls) as T
+  }
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value)
+        .filter(([, v]) => v !== null)
+        .map(([k, v]) => [k, stripNulls(v)]),
+    ) as T
+  }
+  return value
 }
 
 /**
