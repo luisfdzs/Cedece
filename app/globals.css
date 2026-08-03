@@ -1,0 +1,468 @@
+@import 'tailwindcss';
+
+/* ==========================================================================
+   CEDECÉ — SISTEMA VISUAL
+
+   El punto de partida no es un moodboard: son las fotos que hay. Casi todo el
+   material de esta web es oscuro y de mucho contraste —el retrato en blanco y
+   negro con los ojos azules, la cortina de terciopelo rojo del micrófono
+   vintage, los tubos de neón, los conciertos de noche— y el logotipo que
+   aparece en el faldón del escenario es blanco sobre negro. Así que la web es
+   negra, y no por moda: es lo único que deja que las fotos manden.
+
+   Los tres colores salen de las propias imágenes: el rojo del terciopelo, el
+   amarillo de la cazadora de carreras y el azul de las gafas de sol. Se usan
+   como acento y nunca como fondo de un bloque grande.
+   ========================================================================== */
+
+@theme {
+  /* --- Color ---------------------------------------------------------------
+     `ink` no es negro puro: el negro absoluto sobre un panel OLED produce un
+     borde duro contra la primera imagen, y en la galería se nota. */
+  --color-ink: #0b0b0d;
+  --color-ink-soft: #15151a;
+  --color-ink-line: #26262e;
+  --color-paper: #f4f1ec;
+  --color-paper-dim: #a8a4a0;
+
+  /* El rojo del terciopelo del micrófono. Es EL acento: enlaces, botón
+     principal, la línea que subraya la sección activa. */
+  --color-velvet: #d81f36;
+  --color-velvet-dim: #8f1524;
+  /* El amarillo de la cazadora. Sólo para señalar cosas que ocurren: «entrada
+     libre», «nuevo». */
+  --color-acid: #f5c518;
+  /* El azul de las gafas. Para lo secundario que no debe competir con el rojo. */
+  --color-ice: #4aa8ff;
+
+  /* --- Tipografía --------------------------------------------------------- */
+  --font-display: var(--font-anton), 'Arial Narrow', sans-serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-mono-jb), ui-monospace, monospace;
+
+  /* --- Medidas ------------------------------------------------------------ */
+  --spacing-gutter: 1.25rem;
+  --radius-card: 0.25rem;
+}
+
+/* ==========================================================================
+   BASE
+   ========================================================================== */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* La cabecera es fija: sin esto, al saltar a una sección el titular queda
+       debajo de ella. */
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    background-color: var(--color-ink);
+    color: var(--color-paper);
+    font-family: var(--font-body);
+    /* `text-wrap: pretty` evita la palabra huérfana al final de un párrafo, que
+       en columnas estrechas de móvil sale constantemente. */
+    text-wrap: pretty;
+    overflow-x: hidden;
+  }
+
+  /* Titulares en la condensada pesada, siempre en versalitas de caja alta y
+     muy apretados: es la voz del cartel de concierto, y es lo que hace que la
+     web se lea como un cartel y no como un blog. */
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    line-height: 0.92;
+    text-wrap: balance;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* El foco se dibuja explícitamente y en el amarillo, no en el rojo: sobre
+     fondo negro el rojo tiene poco contraste con el propio borde del elemento
+     y quien navega con el teclado necesita ver dónde está sin dudarlo. */
+  :focus-visible {
+    outline: 2px solid var(--color-acid);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: var(--color-velvet);
+    color: var(--color-paper);
+  }
+
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* ==========================================================================
+   PIEZAS REUTILIZADAS
+
+   Van en CSS y no en clases de Tailwind repetidas porque son decisiones de
+   diseño con nombre: si el rótulo de sección cambia, cambia en un sitio.
+   ========================================================================== */
+
+/* --- Rótulo pequeño en mono, el que numera y etiqueta las secciones -------- */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-paper-dim);
+}
+
+/* --- Botón principal: el de escuchar. Sólo hay uno por pantalla ----------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid var(--color-ink-line);
+  border-radius: var(--radius-card);
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  background: var(--color-velvet);
+  border-color: var(--color-velvet);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #ef2a42;
+  border-color: #ef2a42;
+}
+
+.btn-ghost:hover {
+  border-color: var(--color-paper);
+  background: rgb(255 255 255 / 0.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn:hover {
+    transform: none;
+  }
+}
+
+/* --- Etiqueta de estado: «entrada libre», «agotado», «nuevo» -------------- */
+.chip {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+}
+
+/* ==========================================================================
+   CINTA DE TEXTO EN MOVIMIENTO
+
+   La tira de ciudades y títulos que separa el hero de la música. Es la única
+   animación decorativa de la web y está aquí porque es el gesto que trae el
+   cartel de gira a la pantalla.
+
+   Dos detalles que no son opcionales:
+     · El contenido se duplica en el HTML y la animación recorre exactamente el
+       50 %. Es lo que hace que el bucle no tenga costura. La copia va con
+       `aria-hidden`, o el lector de pantalla lee la lista dos veces.
+     · Con `prefers-reduced-motion` no se ralentiza: se PARA y se deja como una
+       línea de texto normal, con scroll horizontal si no cabe. Un texto que se
+       mueve despacio sigue siendo un texto que se mueve.
+   ========================================================================== */
+
+.ticker {
+  overflow: hidden;
+  border-top: 1px solid var(--color-ink-line);
+  border-bottom: 1px solid var(--color-ink-line);
+  background: var(--color-ink-soft);
+  /* Se apaga por los bordes para que el texto no aparezca de golpe. */
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 6rem,
+    black calc(100% - 6rem),
+    transparent
+  );
+}
+
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker-scroll 42s linear infinite;
+}
+
+.ticker:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+.ticker-item {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.85rem 1.5rem;
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  color: var(--color-paper);
+}
+
+.ticker-item::after {
+  content: '';
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: var(--color-velvet);
+}
+
+@keyframes ticker-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker {
+    overflow-x: auto;
+    mask-image: none;
+  }
+  .ticker-track {
+    animation: none;
+  }
+}
+
+/* ==========================================================================
+   HERO
+
+   El fondo es un bucle mudo de seis segundos de un TAKE ONE (ver
+   `scripts/build-videos.mjs`). Va mudo por obligación técnica, no por gusto:
+   un vídeo con pista de audio no puede autorreproducirse en ningún navegador
+   moderno.
+
+   EL VELO ESTÁ ANCLADO AL TEXTO Y NO ES UN PORCENTAJE DEL ALTO. Es lo mismo
+   que se aprendió en el Portfolio: los topes en `rem` sobreviven a cualquier
+   pantalla, y los textos que fallan primero sobre una imagen en movimiento no
+   son el nombre —que es enorme y aguanta cualquier cosa detrás— sino la frase
+   y los tres rótulos pequeños. Quien toque este gradiente tiene que volver a
+   mirar esos dos.
+   ========================================================================== */
+
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.hero-media {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Desaturado y oscurecido: el original es un vídeo de móvil grabado a
+     mediodía y a plena luz se come el texto entero. */
+  filter: grayscale(0.55) brightness(0.45) contrast(1.1);
+}
+
+.hero-veil {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(
+      to top,
+      rgb(11 11 13 / 0.97) 0,
+      rgb(11 11 13 / 0.9) 14rem,
+      rgb(11 11 13 / 0.45) 26rem,
+      rgb(11 11 13 / 0.25) 100%
+    ),
+    /* Segundo velo, lateral y suave, para la línea de la frase en pantalla
+       ancha, donde el texto se aleja del degradado de abajo. */
+    linear-gradient(to right, rgb(11 11 13 / 0.55), transparent 60%);
+}
+
+/* El rótulo del nombre. `clamp` con `vw` para que llene el ancho en cualquier
+   pantalla sin un solo punto de ruptura. */
+.hero-name {
+  font-size: clamp(3.5rem, 17vw, 15rem);
+  line-height: 0.82;
+  letter-spacing: -0.035em;
+}
+
+/* ==========================================================================
+   VÍDEO VERTICAL
+
+   Los diez vídeos son verticales 9:16 de móvil. La proporción se declara en
+   CSS y no se deja al fichero: así el hueco existe antes de que el vídeo
+   cargue y la página no salta.
+   ========================================================================== */
+
+.vframe {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  background: var(--color-ink-soft);
+  border: 1px solid var(--color-ink-line);
+  border-radius: var(--radius-card);
+}
+
+.vframe-horizontal {
+  aspect-ratio: 16 / 9;
+}
+
+.vframe video,
+.vframe img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ==========================================================================
+   GALERÍA
+
+   Retícula de columnas con las verticales ocupando dos filas. Es lo que evita
+   el recorte cuadrado que aplasta un retrato vertical, y sale del campo
+   `orientation` del contenido — que existe justamente para esto.
+   ========================================================================== */
+
+.grid-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 9rem;
+  gap: 0.5rem;
+}
+
+@media (min-width: 48rem) {
+  .grid-gallery {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: 11rem;
+  }
+}
+
+@media (min-width: 80rem) {
+  .grid-gallery {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+.tile {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-ink-soft);
+  border-radius: var(--radius-card);
+  grid-row: span 1;
+}
+
+.tile-portrait {
+  grid-row: span 2;
+}
+
+.tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition:
+    transform 400ms ease,
+    filter 400ms ease;
+  filter: saturate(0.85);
+}
+
+.tile:hover img,
+.tile:focus-within img {
+  transform: scale(1.04);
+  filter: saturate(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile img {
+    transition: none;
+  }
+  .tile:hover img,
+  .tile:focus-within img {
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   IMPRESIÓN
+
+   Un promotor de sala imprime o guarda en PDF, así que la hoja tiene que
+   quedar legible: fondo blanco, tinta negra, y fuera todo lo que sólo tiene
+   sentido en pantalla.
+   ========================================================================== */
+
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .hero {
+    min-height: auto;
+  }
+
+  .hero-media,
+  .hero-veil,
+  .ticker,
+  video,
+  nav,
+  .no-print {
+    display: none !important;
+  }
+
+  h1,
+  h2,
+  h3 {
+    color: #000;
+  }
+
+  /* La dirección de un enlace no se ve en papel: se escribe al lado. */
+  a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.7em;
+    word-break: break-all;
+  }
+}
