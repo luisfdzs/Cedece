@@ -105,8 +105,13 @@ concierto que nadie ha comprobado — de los ocho que constan, sólo uno trae d�
 
 **Hecho el 2026-08-03.** Proyecto de Sanity **`g848avm8`**, dataset `production` (público: la web
 lee sin token), con los 66 documentos de `content/` importados, los tres orígenes CORS, los dos
-webhooks de revalidación y las variables de entorno en los **dos** proyectos de Vercel. Lo único que
-falta es desplegar: ver «Pendiente», al final.
+webhooks de revalidación y las variables de entorno en los **dos** proyectos de Vercel. Desplegado y
+en marcha en los dos entornos.
+
+Recordatorio de cómo se comprueba, porque no es evidente: **las dos fuentes dicen lo mismo, así que
+mirar la web no distingue.** Se comprueba que no haya líneas `[content]` en el log del build, y que
+`POST /api/revalidate` sin firma devuelva **401** («Invalid signature») y no un 500 — un 500 significa
+que falta `SANITY_REVALIDATE_SECRET` en ese entorno.
 
 Se deja aquí la receta entera porque es la que hay que repetir para montar otro entorno, y porque
 dos de los cinco pasos no son evidentes. Mientras no haya `projectId`, `/admin` explica esto mismo.
@@ -167,12 +172,6 @@ test despliega `test` como su propia producción, así que allí `VERCEL_ENV` ta
 
 Por orden de lo que más aporta:
 
-- [ ] **Promocionar este cambio a `test` y a `prod`.** Las variables ya están en los dos proyectos
-      de Vercel, pero **una variable de entorno no hace nada hasta el siguiente despliegue**, y el
-      arreglo de `stripNulls` (ver punto 13 del CLAUDE.md) sólo está en `develop`. Hasta que se
-      promocione, los dos entornos siguen sirviendo `content/`: se ven idénticos, así que **no vale
-      mirar la web para saber si ha funcionado** — hay que mirar que no haya líneas `[content]` en el
-      log del build.
 - [ ] **El logotipo de verdad.** `components/layout/Logo.tsx` es una reconstrucción geométrica del
       monograma que se ve en el faldón del escenario. Hay que pedirle el SVG y cambiar **también**
       `app/(site)/[locale]/icon.tsx`.

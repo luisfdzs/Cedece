@@ -32,9 +32,8 @@ de producción limpio en los tres idiomas. Detalles en [[modelo-de-ramas]].
 
 **El panel está enchufado (2026-08-03, tarde).** Proyecto de Sanity `g848avm8`, dataset
 `production` público, los 66 documentos de `content/` importados, tres orígenes CORS, dos webhooks
-de revalidación y las variables de entorno en los dos proyectos de Vercel. **Falta desplegar:** una
-variable de entorno no hace nada hasta el siguiente despliegue, y el arreglo de `stripNulls` (punto
-13) sólo está en `develop`. Detalle en [[panel-de-sanity]].
+de revalidación y las variables de entorno en los dos proyectos de Vercel, **desplegado en los dos
+entornos**. Detalle en [[panel-de-sanity]].
 
 ## 2. Stack técnico
 
@@ -166,8 +165,9 @@ pasos a cinco: **le faltaba el de CORS**, sin el cual el panel carga y no deja e
 `lint` y `build` limpios (el `build` ya leyendo de Sanity). Las variables de entorno están en los dos
 proyectos de Vercel, puestas por el navegador; **`form_input` sobre el interruptor «Sensitive» no
 sirve** —cambia el checkbox pero no el estado de React, y encima lo desincroniza—: hay que pulsarlo y
-comprobar con una captura antes de guardar. **Pendiente: promocionar a `test` y a `prod`**, porque
-una variable de entorno no hace nada hasta el siguiente despliegue._
+comprobar con una captura antes de guardar. Promocionado a `test` y a `prod`, y comprobado con lo
+único que distingue las dos fuentes: `POST /api/revalidate` sin firma devuelve **401** en los dos
+entornos, no un 500 — o sea que el secreto llegó._
 
 _2026-08-03 (tarde) — repaso de la composición y de los enlaces. La web se compone ahora **al
 eje** ([[composicion-centrada]]); lo que Luis veía «solapado» eran las tildes de las capitales de
