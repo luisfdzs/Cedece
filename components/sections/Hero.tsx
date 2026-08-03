@@ -89,9 +89,11 @@ export function Hero({
       ) : null}
       <div className="hero-veil" aria-hidden />
 
-      <div className="mx-auto w-full max-w-6xl px-(--spacing-gutter) pt-32 pb-14 md:pb-20">
+      <div className="mx-auto w-full max-w-6xl px-(--spacing-gutter) pt-32 pb-16 md:pb-24">
+        {/* `mb-9` en la fila de rótulos: la tilde de la É del nombre sube por encima de la
+            altura de mayúscula y con menos hueco se mete en esa banda. */}
         {artist.roles.length > 0 ? (
-          <ul className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-2">
+          <ul className="mb-9 flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
             {artist.roles.map((role, i) => (
               <li key={i} className="eyebrow text-[var(--color-paper)]">
                 {pick(role, locale)}
@@ -107,14 +109,17 @@ export function Hero({
 
         <h1 className="hero-name">{artist.name}</h1>
 
-        <p className="mt-6 max-w-xl text-lg leading-snug text-[var(--color-paper)] md:text-2xl">
+        {/* `mt-7` y no `mt-6`: el nombre ocupa media pantalla y su caja tipográfica acaba
+            justo donde acaban las letras, así que la frase necesita aire de verdad para no
+            parecer pegada al rótulo. */}
+        <p className="mx-auto mt-7 max-w-xl text-lg leading-snug text-[var(--color-paper)] md:text-2xl">
           {pick(artist.tagline, locale)}
         </p>
 
-        <p className="eyebrow mt-4">{artist.city}</p>
+        <p className="eyebrow mt-5">{artist.city}</p>
 
         {primary.length > 0 ? (
-          <div className="mt-9 flex flex-wrap gap-3">
+          <div className="mt-10 flex flex-wrap justify-center gap-3">
             {primary.map((platform, i) => {
               const isFirst = i === 0
               return (

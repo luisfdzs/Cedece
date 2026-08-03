@@ -47,7 +47,10 @@ export function Header({ locale }: { locale: Locale }) {
           aria-label={ui.nav.music}
           className="min-w-0 flex-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          <ul className="flex items-center justify-end gap-1 whitespace-nowrap">
+          {/* `justify-center` y no `justify-end`: los seis enlaces al eje de la cabecera, con
+              la marca a un lado y los idiomas al otro. Cuando no caben, el `overflow-x` del
+              `<nav>` los deja desplazarse igual. */}
+          <ul className="flex items-center justify-center gap-1 whitespace-nowrap">
             {links.map((link) => (
               <li key={link.href}>
                 <Link

@@ -19,6 +19,20 @@ import { VideoFrame } from '../ui/VideoFrame'
  * Ninguno de los vídeos se descarga hasta que se pulsa: `VideoFrame` monta el `<video>` con
  * el clic. Con diez vídeos y 28 MB en la página, eso no es una optimización opcional.
  */
+/**
+ * El ancho de una ficha: una columna en móvil, dos a partir de `sm` y tres a partir de `lg`.
+ *
+ * **Va en `flex-wrap` con un ancho calculado y no en una retícula de columnas**, y el motivo
+ * es la última fila: los siete vídeos que no son TAKE ONE dan 3 + 3 + 1, y en una retícula de
+ * tres columnas ese último se queda pegado al borde izquierdo con dos huecos a la derecha. En
+ * una web alineada a la izquierda eso no se nota; centrada, es lo primero que se ve. Con
+ * `flex-wrap` y `justify-center`, la fila incompleta se centra sola.
+ *
+ * Los restos de los `gap` van en el cálculo: `gap-8` son 2rem, así que dos columnas se
+ * reparten `100% - 2rem` y tres se reparten `100% - 4rem`.
+ */
+const CARD_WIDTH = 'w-full sm:w-[calc((100%-2rem)/2)] lg:w-[calc((100%-4rem)/3)]'
+
 export function Videos({ videos, locale }: { videos: Video[]; locale: Locale }) {
   const ui = t(locale)
 
@@ -33,17 +47,20 @@ export function Videos({ videos, locale }: { videos: Video[]; locale: Locale }) 
   return (
     <Section id="videos" number="02" title={ui.videos.title} lead={ui.videos.lead} tone="soft">
       {takeOne.length > 0 ? (
-        <div className="mb-16">
-          <div className="mb-8 border-l-2 border-[var(--color-velvet)] pl-4">
-            <h3 className="text-[clamp(1.5rem,4vw,2.25rem)]">{ui.videos.takeoneTitle}</h3>
-            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[var(--color-paper-dim)]">
+        <div className="mb-20">
+          {/* El filete corto encima y centrado, en vez de la barra lateral que había antes:
+              un `border-left` sobre un bloque centrado señala un borde que ya no existe. */}
+          <div className="mb-10">
+            <hr className="rule-center" aria-hidden />
+            <h3 className="mt-5 text-[clamp(1.5rem,4vw,2.25rem)]">{ui.videos.takeoneTitle}</h3>
+            <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-[var(--color-paper-dim)]">
               {ui.videos.takeoneLead}
             </p>
           </div>
 
-          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="flex flex-wrap justify-center gap-8">
             {takeOne.map((video) => (
-              <li key={video.file ?? video.youtubeId}>
+              <li key={video.file ?? video.youtubeId} className={CARD_WIDTH}>
                 <VideoCard video={video} locale={locale} showEpisode />
               </li>
             ))}
@@ -52,9 +69,9 @@ export function Videos({ videos, locale }: { videos: Video[]; locale: Locale }) 
       ) : null}
 
       {rest.length > 0 ? (
-        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="flex flex-wrap justify-center gap-8">
           {rest.map((video) => (
-            <li key={video.file ?? video.youtubeId}>
+            <li key={video.file ?? video.youtubeId} className={CARD_WIDTH}>
               <VideoCard video={video} locale={locale} />
             </li>
           ))}
@@ -102,10 +119,16 @@ function VideoCard({
         </div>
       ) : null}
 
-      <div className="pt-4">
+      <div className="pt-5">
         {/* Se compone con un array y se une: encadenar separadores con condicionales en el
-            JSX es cómo aparecen los « · · » sueltos cuando falta el lugar. */}
-        <p className="eyebrow">
+            JSX es cómo aparecen los « · · » sueltos cuando falta el lugar.
+
+            `min-h-[3em]` reserva las DOS líneas que este rótulo ocupa cuando el sitio tiene
+            nombre largo —«Plaza Mayor de Lugo · 18 de febrero de 2024» envuelve— para que
+            los títulos de las tres fichas de una fila queden a la misma altura. Sin la
+            reserva, la ficha del rótulo largo empuja su título un renglón más abajo que las
+            de al lado y la fila se lee descuadrada. */}
+        <p className="eyebrow min-h-[3em]">
           {[
             showEpisode && video.episode ? ui.videos.episode(video.episode) : null,
             video.place,
@@ -115,31 +138,40 @@ function VideoCard({
             .join(' · ')}
         </p>
 
-        <h4 className="font-(family-name:--font-display) mt-2 text-xl uppercase">{title}</h4>
+        {/* `leading-tight` y `mt-3`: el rótulo de arriba envuelve a dos líneas en las fichas
+            de título largo, y con menos hueco la tilde de «PARÍS» se subía a la fecha. */}
+        <h4 className="font-(family-name:--font-display) mt-3 text-xl leading-tight uppercase">
+          {title}
+        </h4>
 
         {video.song ? (
-          <p className="font-(family-name:--font-mono) mt-1 text-xs text-[var(--color-paper-dim)]">
+          <p className="font-(family-name:--font-mono) mt-2 text-xs text-[var(--color-paper-dim)]">
             {ui.videos.song}: {video.song}
           </p>
         ) : null}
 
         {video.note ? (
-          <p className="mt-3 text-sm leading-relaxed text-[var(--color-paper-dim)]">
+          <p className="mx-auto mt-4 max-w-sm text-sm leading-relaxed text-[var(--color-paper-dim)]">
             {pick(video.note, locale)}
           </p>
         ) : null}
 
+        {/* El oficio encima del nombre y en `paper-mute`, igual que en las fichas de música y
+            por el mismo motivo: en `ink-line` no se leía ninguno. */}
         {video.credits && video.credits.length > 0 ? (
-          <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--color-paper-dim)]">
+          <ul className="mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2.5 text-xs">
             {video.credits.map((credit) => (
               <li key={`${credit.role}-${credit.who}`}>
-                <span className="text-[var(--color-ink-line)]">{credit.role}:</span> {credit.who}
+                <span className="block text-[0.6875rem] text-[var(--color-paper-mute)]">
+                  {credit.role}
+                </span>
+                <span className="text-[var(--color-paper-dim)]">{credit.who}</span>
               </li>
             ))}
           </ul>
         ) : null}
 
-        <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-xs">
+        <div className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-1 text-xs">
           {video.youtubeId ? (
             <a
               href={`https://youtu.be/${video.youtubeId}`}

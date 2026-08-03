@@ -35,14 +35,21 @@ export function Section({ id, number, title, lead, children, className, tone = '
       )}
     >
       <div className="mx-auto max-w-6xl">
-        <header className="mb-10 md:mb-14">
-          <p className="eyebrow mb-3 flex items-center gap-3">
+        {/*
+          La cabecera al eje: filete, número, filete — y debajo el titular.
+
+          El `mb-5` entre el rótulo y el titular no es decorativo: con el interlineado
+          apretado de Anton, las tildes de las capitales acentuadas suben por encima de la
+          altura de mayúscula y con menos hueco «MÚSICA» y «GALERÍA» se apoyaban en el
+          número. Ver la regla de `h1, h2, h3` en `globals.css`.
+        */}
+        <header className="mb-12 md:mb-16">
+          <p className="eyebrow eyebrow-rule">
             <span>{number}</span>
-            <span aria-hidden className="h-px w-10 bg-[var(--color-velvet)]" />
           </p>
-          <h2 className="text-[clamp(2.25rem,7vw,4.5rem)]">{title}</h2>
+          <h2 className="mt-5 text-[clamp(2.25rem,7vw,4.5rem)]">{title}</h2>
           {lead ? (
-            <p className="mt-4 max-w-2xl text-base leading-relaxed text-[var(--color-paper-dim)] md:text-lg">
+            <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-[var(--color-paper-dim)] md:text-lg">
               {lead}
             </p>
           ) : null}

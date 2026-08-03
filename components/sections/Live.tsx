@@ -34,8 +34,8 @@ export function Live({ shows, artist, locale }: { shows: Show[]; artist: Artist;
 
   return (
     <Section id="directo" number="03" title={ui.live.title} lead={ui.live.lead}>
-      <div className="mb-12">
-        <h3 className="mb-5 text-xl">{ui.live.upcoming}</h3>
+      <div className="mb-16">
+        <h3 className="mb-6 text-xl">{ui.live.upcoming}</h3>
 
         {upcoming.length > 0 ? (
           <ul className="divide-y divide-[var(--color-ink-line)] border-y border-[var(--color-ink-line)]">
@@ -49,17 +49,17 @@ export function Live({ shows, artist, locale }: { shows: Show[]; artist: Artist;
             ))}
           </ul>
         ) : (
-          <div className="rounded-(--radius-card) border border-dashed border-[var(--color-ink-line)] p-6 md:p-8">
+          <div className="mx-auto max-w-2xl rounded-(--radius-card) border border-dashed border-[var(--color-ink-line)] p-8 md:p-10">
             <p className="font-(family-name:--font-display) text-2xl uppercase">{ui.live.none}</p>
-            <p className="mt-3 max-w-xl text-sm leading-relaxed text-[var(--color-paper-dim)]">
+            <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-[var(--color-paper-dim)]">
               {ui.live.noneHint}
             </p>
             {artist.bookingEmail ? (
-              <a href={`mailto:${artist.bookingEmail}`} className="btn btn-primary mt-5">
+              <a href={`mailto:${artist.bookingEmail}`} className="btn btn-primary mt-6">
                 {ui.contact.booking}
               </a>
             ) : (
-              <a href="#contacto" className="btn btn-ghost mt-5">
+              <a href="#contacto" className="btn btn-ghost mt-6">
                 {ui.contact.booking}
               </a>
             )}
@@ -69,17 +69,18 @@ export function Live({ shows, artist, locale }: { shows: Show[]; artist: Artist;
 
       {/* La gira de 2023 como texto: su valor no está en las fechas —que casi no constan—
           sino en lo que fue. Ver `content/shows.ts`. */}
-      <div className="mb-12 border-l-2 border-[var(--color-velvet)] pl-4">
-        <p className="eyebrow">{tour.year}</p>
-        <h3 className="mt-1 text-2xl">{tour.name}</h3>
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--color-paper-dim)]">
+      <div className="mx-auto mb-16 max-w-2xl">
+        <hr className="rule-center" aria-hidden />
+        <p className="eyebrow mt-5">{tour.year}</p>
+        <h3 className="mt-2 text-2xl">{tour.name}</h3>
+        <p className="mt-4 text-sm leading-relaxed text-[var(--color-paper-dim)]">
           {pick(tour.summary, locale)}
         </p>
       </div>
 
       {past.length > 0 ? (
         <div>
-          <h3 className="mb-5 text-xl">{ui.live.past}</h3>
+          <h3 className="mb-6 text-xl">{ui.live.past}</h3>
           <ul className="divide-y divide-[var(--color-ink-line)] border-y border-[var(--color-ink-line)]">
             {past.map((show, i) => (
               <ShowRow key={`${show.date}-${show.city}-${i}`} show={show} locale={locale} />
@@ -102,39 +103,53 @@ function ShowRow({
 }) {
   const ui = t(locale)
 
+  /**
+   * Cada concierto es un BLOQUE APILADO Y CENTRADO, no una fila de tres columnas.
+   *
+   * La fila de antes ponía la fecha en una columna fija de `11rem`, el sitio en el medio y
+   * las etiquetas a la derecha. Ese reparto tiene sentido cuando se leen veinte fechas
+   * seguidas y hace falta la columna de fechas alineada para recorrerla con la vista; con
+   * ocho conciertos y ninguno futuro, lo que queda es una fila con la mitad derecha vacía
+   * y una nota de dos líneas colgando de la columna del medio.
+   *
+   * Apilado, la fecha sigue siendo lo primero que se lee de cada bloque —que es lo que
+   * busca quien programa una sala— y el separador entre filas hace el resto.
+   */
   return (
-    <li className={upcoming ? 'py-4' : 'py-4 opacity-70 transition-opacity hover:opacity-100'}>
-      <div className="flex flex-col gap-2 md:flex-row md:items-baseline md:gap-6">
-        <p className="font-(family-name:--font-mono) shrink-0 text-xs tracking-[0.08em] text-[var(--color-paper-dim)] uppercase md:w-44">
-          {formatDate(show.date, show.datePrecision, locale)}
+    <li
+      className={
+        upcoming
+          ? 'py-7'
+          : 'py-7 opacity-70 transition-opacity hover:opacity-100 focus-within:opacity-100'
+      }
+    >
+      <p className="font-(family-name:--font-mono) text-xs tracking-[0.08em] text-[var(--color-paper-dim)] uppercase">
+        {formatDate(show.date, show.datePrecision, locale)}
+      </p>
+
+      <p className="font-(family-name:--font-display) mt-2 text-lg leading-tight uppercase">
+        {show.city}
+        {show.venue ? <span className="text-[var(--color-paper-dim)]"> · {show.venue}</span> : null}
+      </p>
+
+      <p className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-[var(--color-paper-mute)]">
+        {show.format ? <span>{ui.live.formats[show.format]}</span> : null}
+        {show.lineup && show.lineup.length > 0 ? (
+          <span>
+            {ui.live.with} {show.lineup.join(', ')}
+          </span>
+        ) : null}
+        {show.tour ? <span className="italic">{show.tour}</span> : null}
+      </p>
+
+      {show.note ? (
+        <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-[var(--color-paper-dim)]">
+          {pick(show.note, locale)}
         </p>
+      ) : null}
 
-        <div className="min-w-0 flex-1">
-          <p className="font-(family-name:--font-display) text-lg uppercase">
-            {show.city}
-            {show.venue ? (
-              <span className="text-[var(--color-paper-dim)]"> · {show.venue}</span>
-            ) : null}
-          </p>
-
-          <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[var(--color-paper-dim)]">
-            {show.format ? <span>{ui.live.formats[show.format]}</span> : null}
-            {show.lineup && show.lineup.length > 0 ? (
-              <span>
-                {ui.live.with} {show.lineup.join(', ')}
-              </span>
-            ) : null}
-            {show.tour ? <span className="italic">{show.tour}</span> : null}
-          </p>
-
-          {show.note ? (
-            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[var(--color-paper-dim)]">
-              {pick(show.note, locale)}
-            </p>
-          ) : null}
-        </div>
-
-        <div className="flex shrink-0 items-center gap-2">
+      {show.soldOut || show.free || (show.ticketsUrl && !show.soldOut) ? (
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
           {show.soldOut ? (
             <span className="chip text-[var(--color-velvet)]">{ui.live.soldOut}</span>
           ) : null}
@@ -150,7 +165,7 @@ function ShowRow({
             </a>
           ) : null}
         </div>
-      </div>
+      ) : null}
     </li>
   )
 }
