@@ -76,3 +76,7 @@ next-env.d.ts
 # --- Migración a Sanity ---
 # Generado por `npm run migrate:build` a partir de content/.
 scripts/migration/import.ndjson
+
+# `vercel link` añade aquí `.vercel` y `.env*` por su cuenta cada vez que se ejecuta. Ya
+# están declarados arriba, así que si vuelven a aparecer duplicados al final del fichero se
+# pueden borrar sin pensar.
