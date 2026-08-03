@@ -44,9 +44,10 @@ mcp.local.json
 .claude/
 
 # --- ORIGINALES DE INSTAGRAM ---
-# `media/` guarda los 68 ficheros tal y como los descarga `scripts/fetch-instagram.md`:
-# 223 MB de vídeo que NO tienen que entrar en el repositorio. Lo que viaja es el
-# resultado de `npm run media:images` y `npm run media:videos` en `public/`.
+# `media/` guarda los 68 ficheros tal y como se descargaron, más su `manifest.json`: 233 MB,
+# de los cuales 223 son vídeo. NO tienen que entrar en el repositorio, porque el historial de
+# git no se limpia. Lo que viaja es el resultado de `npm run media:images` y
+# `npm run media:videos` en `public/`. Cómo se descargaron, en el README.
 media/
 
 # --- Dependencias / build ---
