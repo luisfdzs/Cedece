@@ -52,7 +52,13 @@ siguiente paso opcional, con los cuatro pasos del README de `develop`.
 - **Calidad:** `npm run check` (typecheck + ESLint + Prettier).
 - **Tipografía:** Anton (titulares), Inter (cuerpo) y JetBrains Mono (datos y rótulos), las
   tres autoalojadas por `next/font` — ninguna petición a Google en tiempo de ejecución. Anton
-  es la voz del proyecto: sin ella la web se lee como un blog y no como un cartel.
+  es la voz del proyecto: sin ella la web se lee como un blog y no como un cartel. **Anton
+  mide más de un em de alto y sus tildes se salen de la caja de línea**; de ahí el
+  `padding-block-start` en `em` de los titulares (ver [[tildes-de-anton]]).
+- **Composición: todo al eje.** El `text-align: center` está en `body`, una sola vez. Lo que
+  eso obliga a hacer en cada bloque nuevo —`max-w` en los textos largos, `justify-center` en
+  los `flex`, `flex-wrap` en las retículas con fila incompleta— está en
+  [[composicion-centrada]].
 - **Material propio: lo que hay en `public/` es lo que viaja.** El cargador
   (`sanity/imageLoader.ts`) sólo transforma URLs de la CDN de Sanity y devuelve las rutas
   locales intactas, así que en las fotos de la galería **`sizes` y `quality` no ahorran ni un
@@ -87,6 +93,12 @@ siguiente paso opcional, con los cuatro pasos del README de `develop`.
    [[fallos-ya-pagados]].
 10. **El logotipo actual es una reconstrucción, y está dicho en el código.** No es el original;
     hay que pedírselo. Ver [[logotipo-provisional]].
+11. **`--color-ink-line` es un color de BORDE y nunca un color de texto.** Se usó como texto
+    para las etiquetas de crédito y los créditos de los fotógrafos quedaron invisibles sobre el
+    fondo de las tarjetas. Para lo apagado-pero-legible está `--color-paper-mute`.
+12. **Un botón que promete una canción lleva a esa canción.** Los seis enlaces de Spotify de
+    `content/releases.ts` iban al perfil del artista. Los nueve identificadores de álbum,
+    verificados, están en [[enlaces-a-cada-lanzamiento]].
 
 ## 4. Reglas del proyecto
 
@@ -135,6 +147,16 @@ Regla de oro: **el contexto nunca debe quedar desactualizado respecto al estado 
 proyecto.**
 
 ---
+
+_2026-08-03 (tarde) — repaso de la composición y de los enlaces. La web se compone ahora **al
+eje** ([[composicion-centrada]]); lo que Luis veía «solapado» eran las tildes de las capitales de
+Anton metiéndose en el renglón de arriba ([[tildes-de-anton]]), y lo que parecía «sin margen» eran
+los créditos pintados con un color de borde. Y los botones de «Escuchar en Spotify» llevan por fin
+a su disco ([[enlaces-a-cada-lanzamiento]]). `npm run typecheck`, `npm run lint` y `npm run build`
+limpios en los tres idiomas. **Ojo con `npm run check`:** el paso de Prettier falla en los 70
+ficheros del repositorio, tocados y sin tocar, porque el working copy tiene finales de línea CRLF
+y la configuración de Prettier espera LF. Es anterior a este cambio y no se arregló aquí: son 70
+ficheros de diferencia y esa decisión es de Luis._
 
 _2026-08-03 — montaje inicial. Stack del Portfolio (Next 16 + Sanity + Vercel) con dos
 diferencias deliberadas: trilingüe es/en/gl en vez de bilingüe, y contenido extraído de las

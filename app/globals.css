@@ -24,6 +24,12 @@
   --color-ink-line: #26262e;
   --color-paper: #f4f1ec;
   --color-paper-dim: #a8a4a0;
+  /* El tono más apagado que sigue siendo LEGIBLE, para etiquetas de crédito, números de
+     pista y años sueltos. Existe porque antes esos textos se pintaban con `ink-line`
+     —que es un color de BORDE, #26262e— sobre el fondo de las tarjetas, #15151a: los
+     nombres de los fotógrafos y los créditos de producción eran invisibles en pantalla.
+     Ver el punto 7 del CLAUDE.md: el crédito que no se lee es un crédito que no existe. */
+  --color-paper-mute: #7e7873;
 
   /* El rojo del terciopelo del micrófono. Es EL acento: enlaces, botón
      principal, la línea que subraya la sección activa. */
@@ -72,19 +78,48 @@
        en columnas estrechas de móvil sale constantemente. */
     text-wrap: pretty;
     overflow-x: hidden;
+    /* ---------------------------------------------------------------------
+       TODO CENTRADO, Y SE DECIDE AQUÍ UNA VEZ.
+
+       La web es un cartel, y un cartel se compone al eje. Ponerlo en `body` en
+       vez de repetir `text-center` en cuarenta sitios tiene una consecuencia
+       práctica: cualquier bloque nuevo nace centrado y nadie tiene que
+       acordarse. Lo que necesita otro reparto —la retícula de la galería, las
+       filas de conciertos— se resuelve con `flex`/`grid` y su propio
+       `items-center`, no volviendo a la izquierda.
+
+       Contrapartida asumida: un párrafo centrado sólo se lee bien si es
+       CORTO y la medida es estrecha. Por eso todos los textos largos de esta
+       web van con `mx-auto` y un `max-w-*` medido; si un día se añade un
+       bloque de texto largo, el `max-w` no es opcional.
+       --------------------------------------------------------------------- */
+    text-align: center;
   }
 
   /* Titulares en la condensada pesada, siempre en versalitas de caja alta y
      muy apretados: es la voz del cartel de concierto, y es lo que hace que la
-     web se lea como un cartel y no como un blog. */
+     web se lea como un cartel y no como un blog.
+
+     `line-height: 1` y no menos. Anton dibuja las tildes de las CAPITALES
+     acentuadas por encima de la altura de mayúscula, y con el 0.92 que había
+     antes esas tildes se metían en la línea de arriba: la Ú de «MÚSICA», la Í
+     de «VÍDEOS» y de «GALERÍA» y la É de «QUIÉN ES» se comían el rótulo
+     numerado que llevan encima. En castellano y en gallego esto no es un caso
+     raro, es la mitad de los titulares. */
   h1,
   h2,
   h3 {
     font-family: var(--font-display);
     text-transform: uppercase;
     letter-spacing: -0.02em;
-    line-height: 0.92;
+    line-height: 1;
     text-wrap: balance;
+    /* Y ADEMÁS, el hueco para la tilde. Anton mide algo más de un em de alto —ascendente
+       más descendente—, así que con `line-height: 1` la caja de línea es más corta que las
+       letras y el sobrante se sale por arriba y por abajo. El reparto en `rem` no sirve
+       aquí: tiene que escalar con el cuerpo, y por eso va en `em`. Sin esto hay que ir
+       compensando a mano el margen de cada titular acentuado, que es lo que estaba mal. */
+    padding-block-start: 0.1em;
   }
 
   a {
@@ -120,13 +155,51 @@
    diseño con nombre: si el rótulo de sección cambia, cambia en un sitio.
    ========================================================================== */
 
-/* --- Rótulo pequeño en mono, el que numera y etiqueta las secciones -------- */
+/* --- Rótulo pequeño en mono, el que numera y etiqueta las secciones --------
+
+   `letter-spacing: 0.18em` deja un hueco suelto al final de la última letra, y
+   con el texto centrado ese hueco descentra el rótulo hacia la izquierda de
+   forma visible. `padding-left` del mismo valor lo compensa. Es el precio de
+   centrar un texto con mucho tracking y hay que pagarlo aquí, no a ojo en cada
+   uso. */
 .eyebrow {
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   letter-spacing: 0.18em;
+  padding-left: 0.18em;
   text-transform: uppercase;
   color: var(--color-paper-dim);
+}
+
+/* --- El rótulo con sus dos filetes, el que abre cada sección ---------------
+
+   Antes era un número con una raya a la derecha, que es lo que se hace cuando
+   el bloque está alineado a la izquierda. Centrado hacen falta las dos. */
+.eyebrow-rule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.eyebrow-rule::before,
+.eyebrow-rule::after {
+  content: '';
+  width: 2.5rem;
+  height: 1px;
+  background: var(--color-velvet);
+}
+
+/* --- Filete corto suelto, para separar un subtítulo de lo que lleva encima -
+
+   Sustituye a los `border-left` de «TAKE ONE» y de la gira: una barra lateral
+   sobre un bloque centrado señala un borde que ya no existe. */
+.rule-center {
+  width: 2rem;
+  height: 2px;
+  margin-inline: auto;
+  background: var(--color-velvet);
+  border: 0;
 }
 
 /* --- Botón principal: el de escuchar. Sólo hay uno por pantalla ----------- */
@@ -317,17 +390,26 @@
       rgb(11 11 13 / 0.45) 26rem,
       rgb(11 11 13 / 0.25) 100%
     ),
-    /* Segundo velo, lateral y suave, para la línea de la frase en pantalla
-       ancha, donde el texto se aleja del degradado de abajo. */
-    linear-gradient(to right, rgb(11 11 13 / 0.55), transparent 60%);
+    /* Segundo velo para la frase y los rótulos pequeños en pantalla ancha, donde
+       el texto se aleja del degradado de abajo. Es radial y no lateral porque el
+       texto está centrado: el velo lateral que había antes oscurecía el lado
+       izquierdo, que es donde estaba el texto cuando iba alineado a la
+       izquierda, y ahora dejaría la frase con un lado apagado y el otro no. */
+    radial-gradient(ellipse 70% 55% at 50% 78%, rgb(11 11 13 / 0.6), transparent 70%);
 }
 
 /* El rótulo del nombre. `clamp` con `vw` para que llene el ancho en cualquier
-   pantalla sin un solo punto de ruptura. */
+   pantalla sin un solo punto de ruptura.
+
+   `0.9` y no `0.82`: es una sola línea, pero la tilde de la É sobresale por
+   arriba y con el valor anterior se subía a la fila de los tres rótulos. */
 .hero-name {
   font-size: clamp(3.5rem, 17vw, 15rem);
-  line-height: 0.82;
+  line-height: 0.9;
   letter-spacing: -0.035em;
+  /* Más que el 0.1em de los demás titulares porque el interlineado es más apretado: cuanto
+     menor es el `line-height`, más se sale la tilde por arriba. */
+  padding-block-start: 0.16em;
 }
 
 /* ==========================================================================
@@ -373,6 +455,11 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-auto-rows: 9rem;
   gap: 0.5rem;
+  /* `dense` rellena los huecos que dejan las verticales al ocupar dos filas. Sin
+     esto la retícula quedaba con agujeros negros sueltos en medio y la última
+     foto colgando sola, que es lo que hacía que la galería pareciese a medio
+     cargar. */
+  grid-auto-flow: row dense;
 }
 
 @media (min-width: 48rem) {

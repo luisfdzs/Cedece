@@ -29,14 +29,14 @@ export function Contact({ artist, locale }: { artist: Artist; locale: Locale }) 
 
   return (
     <Section id="contacto" number="06" title={ui.contact.title} lead={ui.contact.lead} tone="soft">
-      <div className="grid gap-10 md:grid-cols-2 md:gap-14">
+      <div className="grid gap-14 md:grid-cols-2 md:gap-16">
         <div>
-          <p className="eyebrow mb-3">{ui.contact.booking}</p>
+          <p className="eyebrow mb-4">{ui.contact.booking}</p>
 
           {artist.bookingEmail ? (
             <a
               href={`mailto:${artist.bookingEmail}`}
-              className="font-(family-name:--font-display) text-[clamp(1.5rem,4.5vw,2.5rem)] break-all uppercase transition-colors hover:text-[var(--color-velvet)]"
+              className="font-(family-name:--font-display) inline-block text-[clamp(1.5rem,4.5vw,2.5rem)] leading-tight break-all uppercase transition-colors hover:text-[var(--color-velvet)]"
             >
               {artist.bookingEmail}
             </a>
@@ -46,13 +46,13 @@ export function Contact({ artist, locale }: { artist: Artist; locale: Locale }) 
                 href={instagram.url}
                 target="_blank"
                 rel="noreferrer noopener"
-                className="font-(family-name:--font-display) text-[clamp(1.5rem,4.5vw,2.5rem)] uppercase transition-colors hover:text-[var(--color-velvet)]"
+                className="font-(family-name:--font-display) inline-block text-[clamp(1.5rem,4.5vw,2.5rem)] leading-tight uppercase transition-colors hover:text-[var(--color-velvet)]"
               >
                 @soycedece
               </a>
               {/* Se dice por qué el enlace es a Instagram y no a un correo, en vez de dejar
                   que parezca un descuido. */}
-              <p className="mt-3 max-w-md text-sm leading-relaxed text-[var(--color-paper-dim)]">
+              <p className="mx-auto mt-4 max-w-sm text-sm leading-relaxed text-[var(--color-paper-dim)]">
                 {ui.contact.instagramFallback}
               </p>
             </div>
@@ -70,9 +70,9 @@ export function Contact({ artist, locale }: { artist: Artist; locale: Locale }) 
           ) : null}
 
           {artist.shortBio ? (
-            <div className="mt-10 border-t border-[var(--color-ink-line)] pt-6">
-              <p className="eyebrow mb-2">{ui.about.title}</p>
-              <p className="max-w-md text-sm leading-relaxed text-[var(--color-paper-dim)]">
+            <div className="mt-12 border-t border-[var(--color-ink-line)] pt-8">
+              <p className="eyebrow mb-3">{ui.about.title}</p>
+              <p className="mx-auto max-w-sm text-sm leading-relaxed text-[var(--color-paper-dim)]">
                 {pick(artist.shortBio, locale)}
               </p>
             </div>
@@ -80,15 +80,22 @@ export function Contact({ artist, locale }: { artist: Artist; locale: Locale }) 
         </div>
 
         <div>
-          <p className="eyebrow mb-4">{ui.contact.followOn}</p>
-          <ul className="grid grid-cols-2 gap-2">
+          <p className="eyebrow mb-5">{ui.contact.followOn}</p>
+          {/* Dos decisiones y las dos por lo mismo, que las plataformas son SIETE:
+
+              · El icono y el nombre centrados dentro de cada botón. Con el texto a la
+                izquierda, cada botón dejaba un hueco distinto a la derecha y la retícula se
+                leía como una tabla mal cuadrada.
+              · `flex-wrap` y no `grid-cols-2`, para que el séptimo —el que sobra de los tres
+                pares— se centre en su fila en vez de quedarse pegado a la izquierda. */}
+          <ul className="mx-auto flex max-w-md flex-wrap justify-center gap-2.5">
             {artist.platforms.map((platform) => (
-              <li key={platform.url}>
+              <li key={platform.url} className="w-full sm:w-[calc((100%-0.625rem)/2)]">
                 <a
                   href={platform.url}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="flex items-center gap-2.5 rounded-(--radius-card) border border-[var(--color-ink-line)] px-3 py-2.5 text-sm transition-colors hover:border-[var(--color-paper)]"
+                  className="flex items-center justify-center gap-2.5 rounded-(--radius-card) border border-[var(--color-ink-line)] px-3 py-3 text-sm transition-colors hover:border-[var(--color-paper)]"
                 >
                   <PlatformIcon kind={platform.kind} className="h-4 w-4 shrink-0" />
                   <span className="truncate">{platformLabel(platform.kind, platform.label)}</span>

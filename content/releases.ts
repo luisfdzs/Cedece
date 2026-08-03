@@ -18,6 +18,18 @@ import type { ReleaseInput } from './schema'
  * comentario y no como dato de la web: envejecen solas y una cifra pequeña y vieja resta
  * más de lo que suma. «Sal y Hielo» 47.843 · «Tenemos que hablar» 9.198 · «Mil veces»
  * 4.851 · «Todo mi dolor» 1.984 · «Eres» 1.101.
+ *
+ * **CADA ENLACE VA A SU LANZAMIENTO, NO AL PERFIL.** Los seis enlaces de Spotify de este
+ * fichero apuntaban al perfil del artista: el botón prometía «Escuchar en Spotify» debajo
+ * de «Hipersensible» y dejaba a quien lo pulsaba en una lista de todo, buscando el disco a
+ * mano. Los identificadores de álbum se sacaron de la propia discografía de Spotify el 3 de
+ * agosto de 2026 y se escriben en la forma canónica `open.spotify.com/album/<id>`, sin el
+ * prefijo de idioma `/intl-es/` que añade el reproductor web: ese prefijo depende de la
+ * cuenta de quien copió la URL, no del disco.
+ *
+ * Se usa la URL de ÁLBUM y no la de canción incluso en los sencillos de un solo tema. Es
+ * lo que enseña la portada y el año, y en Spotify el sencillo ES un álbum de una pista: la
+ * URL de canción abre lo mismo con menos contexto.
  */
 export const releases: ReleaseInput[] = [
   {
@@ -27,7 +39,7 @@ export const releases: ReleaseInput[] = [
     releaseDate: '2025-01-01',
     datePrecision: 'year',
     featured: true,
-    links: [{ label: 'Spotify', url: 'https://open.spotify.com/artist/70aJqGXd1YRnJNcQDTBGp4' }],
+    links: [{ label: 'Spotify', url: 'https://open.spotify.com/album/6NgA5509rX0s0COAnNZnEv' }],
   },
   {
     title: 'Cuentos de Dragones',
@@ -57,7 +69,7 @@ export const releases: ReleaseInput[] = [
     ],
     links: [
       { label: 'YouTube', url: 'https://youtu.be/4TmA2PgnAA0' },
-      { label: 'Spotify', url: 'https://open.spotify.com/artist/70aJqGXd1YRnJNcQDTBGp4' },
+      { label: 'Spotify', url: 'https://open.spotify.com/album/67R0ZEkQifIHJzUjJjtYIB' },
     ],
   },
   {
@@ -88,7 +100,7 @@ export const releases: ReleaseInput[] = [
       { role: 'Edición', who: 'Cedecé' },
       { role: 'Color', who: 'Vaxa PH' },
     ],
-    links: [{ label: 'Spotify', url: 'https://open.spotify.com/artist/70aJqGXd1YRnJNcQDTBGp4' }],
+    links: [{ label: 'Spotify', url: 'https://open.spotify.com/album/0ZtkeiOUym13EaEjS4m51C' }],
   },
   {
     title: 'Eres',
@@ -97,7 +109,7 @@ export const releases: ReleaseInput[] = [
     releaseDate: '2023-01-01',
     datePrecision: 'year',
     featured: false,
-    links: [{ label: 'Spotify', url: 'https://open.spotify.com/artist/70aJqGXd1YRnJNcQDTBGp4' }],
+    links: [{ label: 'Spotify', url: 'https://open.spotify.com/album/21gDCghcYkaIwwRoy5KoBD' }],
   },
   {
     title: 'Hipersensible',
@@ -117,7 +129,7 @@ export const releases: ReleaseInput[] = [
         'O seu primeiro disco, publicado o 15 de marzo de 2020 e producido integramente por el. É o punto no que doce anos de nomes e de xéneros distintos quedan nun só.',
       ],
     },
-    links: [{ label: 'Spotify', url: 'https://open.spotify.com/artist/70aJqGXd1YRnJNcQDTBGp4' }],
+    links: [{ label: 'Spotify', url: 'https://open.spotify.com/album/45xau2YeYWKnD6YTPxtBOv' }],
   },
 ]
 
@@ -125,10 +137,18 @@ export const releases: ReleaseInput[] = [
  * Temas sueltos anteriores que constan en Spotify por título y año aproximado, sin
  * material gráfico ni créditos comprobables. Se listan aparte, en una línea, en vez de
  * inflar la discografía con cinco fichas vacías.
+ *
+ * **Cada uno enlaza a su tema.** Eran cuatro títulos de texto muerto: constaban en Spotify
+ * y aun así había que ir a buscarlos. Los identificadores salen de la misma pasada por la
+ * discografía que los de arriba, así que la línea entera se puede escuchar.
  */
 export const earlierTracks = [
-  { title: 'Metro50', year: '2023' },
-  { title: 'No es un juego', year: '2022' },
-  { title: 'Bucle', year: '2022' },
-  { title: 'Grisáceo', year: '2022' },
+  { title: 'Metro50', year: '2023', url: 'https://open.spotify.com/album/5cAtDlXGKWM4VKgs6QbpXR' },
+  {
+    title: 'No es un juego',
+    year: '2022',
+    url: 'https://open.spotify.com/album/6wVeuw5Lj2UhTkfr8HkujH',
+  },
+  { title: 'Bucle', year: '2022', url: 'https://open.spotify.com/album/3PHNBCiMtOTYwQd1RUvAwM' },
+  { title: 'Grisáceo', year: '2022', url: 'https://open.spotify.com/album/25BeMVb56lpxP4mc3AMeit' },
 ] as const
