@@ -100,7 +100,13 @@ entornos**. Detalle en [[panel-de-sanity]].
 12. **Un botón que promete una canción lleva a esa canción.** Los seis enlaces de Spotify de
     `content/releases.ts` iban al perfil del artista. Los nueve identificadores de álbum,
     verificados, están en [[enlaces-a-cada-lanzamiento]].
-13. **Los `null` de GROQ se quitan antes de validar** (`stripNulls` en `lib/content.ts`). zod acepta
+13. **Un campo nuevo del contenido se añade en CUATRO sitios**: `content/schema.ts`, el esquema
+    del panel (`sanity/schemas/`), la proyección de `sanity/queries.ts` y
+    `scripts/build-sanity-import.mjs`. Faltó `loop` en los tres últimos y el hero se quedó sin
+    vídeo el día que Sanity empezó a mandar; es el punto 9 de [[fallos-ya-pagados]]. Corolario:
+    **la tolerancia a fallos esconde los fallos** — si un componente aguanta sin un dato, quien
+    elige ese dato tiene que quejarse por el log de que no está.
+14. **Los `null` de GROQ se quitan antes de validar** (`stripNulls` en `lib/content.ts`). zod acepta
     `undefined` en un `.optional()` y rechaza `null`, y una proyección de GROQ devuelve `null` por
     cada campo ausente. Sin eso el panel entero se descarta en silencio y la web se ve idéntica: es
     el punto 8 de [[fallos-ya-pagados]]. **Y por eso enchufar el CMS no se verifica mirando la web,
@@ -153,6 +159,19 @@ Regla de oro: **el contexto nunca debe quedar desactualizado respecto al estado 
 proyecto.**
 
 ---
+
+_2026-08-04 — **el hero recupera su vídeo.** Lo rompió la sesión anterior sin tocar el hero: al
+enchufar Sanity de verdad, la portada se quedó negra porque el campo `loop` —el corte mudo de seis
+segundos del fondo— no existía ni en el esquema del panel, ni en la proyección de GROQ, ni en el guion
+de importación, así que los 66 documentos se importaron sin él y `page.tsx` no encontró ningún TAKE
+ONE con bucle. Sin error, sin aviso y sin línea `[content]`: el `Hero` está hecho para aguantar sin
+vídeo y aguantó. Arreglado en los tres sitios **y** con `restoreLoops()` en `lib/content.ts`, que
+empareja por `file` y le devuelve el bucle a cada vídeo cuando Sanity no lo trae —`loop` no es un dato
+editorial, es el nombre de un fichero que genera `scripts/build-videos.mjs`—; si Sanity lo trae, manda
+Sanity. Y `page.tsx` ya avisa por el log cuando hay TAKE ONE y ninguno con bucle. Comprobado en el
+HTML servido: `<video class="hero-media">` con el bucle y el fotograma nativo de 720 px, los dos a
+200. `typecheck`, `lint` y `build` limpios, sin ninguna línea `[content]` ni `[hero]`. Contado en el
+punto 9 de [[fallos-ya-pagados]]._
 
 _2026-08-03 (tarde, 2) — **el panel de Sanity queda en marcha**: proyecto `g848avm8`, dataset
 `production` público, 66 documentos importados de `content/`, tres orígenes CORS y los dos webhooks
