@@ -69,7 +69,7 @@ export async function getContent(): Promise<Content> {
     // no se ha importado nada. No es un fallo, así que no se grita.
     if (!raw?.artist) return local
 
-    const parsed = contentSchema.safeParse(mergeWithLocal(stripNulls(raw)))
+    const parsed = contentSchema.safeParse(restoreLoops(mergeWithLocal(stripNulls(raw))))
     if (!parsed.success) {
       // Aquí sí: el panel tiene documentos y no cumplen el contrato. Se dice qué campo,
       // porque el mensaje de zod es lo único que va a tener quien lo arregle.
@@ -118,6 +118,46 @@ function stripNulls<T>(value: T): T {
     ) as T
   }
   return value
+}
+
+/**
+ * DEVUELVE A CADA VÍDEO SU BUCLE MUDO SI SANITY NO LO TRAE.
+ *
+ * `loop` no es un dato editorial: es el nombre del corte de seis segundos que genera
+ * `scripts/build-videos.mjs`, y sólo existe para cuatro de los diez vídeos. Nadie lo va a
+ * teclear en el panel, y si falta **el hero se queda sin vídeo y sin fotograma** —
+ * `page.tsx` elige el fondo buscando el primer TAKE ONE que tenga bucle—, que es lo más
+ * visible que tiene la web.
+ *
+ * Fue el fallo real: al enchufar el panel, el esquema de Sanity y el guion de importación no
+ * tenían este campo, así que los documentos importados llegaron sin él. El día que
+ * `stripNulls` hizo que Sanity mandase de verdad, el hero se apagó. Ya está en el esquema y
+ * en la importación, pero esto se queda: **un bucle que existe en disco no depende de que
+ * alguien se acuerde de copiarlo al panel.**
+ *
+ * Se empareja por `file`, que es el nombre del fichero de vídeo y lo identifica sin ambigüedad.
+ * Si Sanity **sí** trae un `loop`, manda Sanity: la regla del punto 2 no se toca.
+ */
+function restoreLoops(raw: Record<string, unknown>): Record<string, unknown> {
+  const videos = raw.videos
+  if (!Array.isArray(videos)) return raw
+
+  const loopByFile = new Map(
+    localVideos
+      .filter((video) => video.file && video.loop)
+      .map((video) => [video.file as string, video.loop as string]),
+  )
+
+  return {
+    ...raw,
+    videos: videos.map((video) => {
+      if (!video || typeof video !== 'object') return video
+      const entry = video as Record<string, unknown>
+      if (entry.loop || typeof entry.file !== 'string') return entry
+      const loop = loopByFile.get(entry.file)
+      return loop ? { ...entry, loop } : entry
+    }),
+  }
 }
 
 /**

@@ -40,6 +40,20 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const backdrop = videos.find((video) => video.kind === 'takeone' && video.loop) ?? undefined
 
   /**
+   * Y SI HAY TAKE ONE PERO NINGUNO TRAE BUCLE, SE DICE.
+   *
+   * Que el hero aguante sin vídeo es una virtud del componente, no una excusa para que la
+   * portada se apague sin que nadie se entere: es exactamente lo que pasó al enchufar el
+   * panel, porque el esquema de Sanity no tenía el campo `loop`. La web se veía «bien».
+   */
+  if (!backdrop && videos.some((video) => video.kind === 'takeone')) {
+    console.warn(
+      '[hero] Hay vídeos de TAKE ONE pero ninguno con `loop`: la portada se queda sin fondo. ' +
+        '¿Falta ejecutar «npm run media:videos», o el campo no llegó desde Sanity?',
+    )
+  }
+
+  /**
    * La cinta: los sitios donde ha tocado y los títulos de los temas, mezclados.
    *
    * Sale del contenido y no de una lista escrita a mano, así que cuando se añada un concierto
