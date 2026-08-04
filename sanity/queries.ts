@@ -74,6 +74,7 @@ export const contentQuery = defineQuery(`{
     place,
     date,
     file,
+    loop,
     youtubeId,
     poster,
     "aspect": coalesce(aspect, "vertical"),

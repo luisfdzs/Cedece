@@ -120,6 +120,7 @@ videos.forEach((video, i) => {
     place: video.place,
     date: video.date,
     file: video.file,
+    loop: video.loop,
     youtubeId: video.youtubeId,
     poster: video.poster,
     aspect: video.aspect ?? 'vertical',

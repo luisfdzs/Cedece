@@ -79,6 +79,13 @@ export const video = defineType({
         'Ruta relativa, por ejemplo «2024-02-22_C3qVEbZIYWk_01.mp4». Sale de npm run media:videos. Si está, manda sobre YouTube.',
     }),
     defineField({
+      name: 'loop',
+      title: 'Bucle mudo de fondo',
+      type: 'string',
+      description:
+        'Corte mudo de seis segundos para el fondo del hero: «2024-02-22_C3qVEbZIYWk_01-loop.mp4». Lo genera npm run media:videos y sólo lo tienen algunos vídeos. El hero elige el primer TAKE ONE que lo tenga.',
+    }),
+    defineField({
       name: 'youtubeId',
       title: 'ID de YouTube',
       type: 'string',
