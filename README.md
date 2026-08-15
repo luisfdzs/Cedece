@@ -152,15 +152,14 @@ dos de los cinco pasos no son evidentes. Mientras no haya `projectId`, `/admin` 
 
 ## 5. Ramas y entornos
 
-| Rama      | Para qué                                    | Vercel                      |
-| --------- | ------------------------------------------- | --------------------------- |
-| `claude`  | Contexto y reglas locales del proyecto      | **Nada.** No despliega      |
-| `develop` | Día a día: desarrollar y subir sin publicar | **Nada.** No despliega      |
-| `test`    | Entorno de test                             | Proyecto de test, `noindex` |
-| `prod`    | Producción                                  | Proyecto de producción      |
+| Rama   | Para qué                                    | Vercel                      |
+| ------ | ------------------------------------------- | --------------------------- |
+| `dev`  | Día a día: desarrollar y subir sin publicar | **Nada.** No despliega      |
+| `test` | Entorno de test                             | Proyecto de test, `noindex` |
+| `prod` | Producción                                  | Proyecto de producción      |
 
-`develop` y `claude` están desactivadas en `vercel.json`. Las promociones son
-`develop` → `test` → `prod` con `merge --no-ff`, **nunca squash**.
+`dev` está desactivada en `vercel.json`. Las promociones son
+`dev` → `test` → `prod` con `merge --no-ff`, **nunca squash**.
 
 **La indexación se decide por la rama, no por `VERCEL_ENV`** (`lib/site-env.ts`). El proyecto de
 test despliega `test` como su propia producción, así que allí `VERCEL_ENV` también vale
