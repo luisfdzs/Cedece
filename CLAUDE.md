@@ -2,12 +2,11 @@
 
 > Contexto principal del proyecto. Se mantiene **actualizado en cada cambio relevante** (ver
 > _Protocolo de mantenimiento_ al final). Es la fuente de verdad compartida por quien trabaje
-> en el proyecto.
->
-> ⚠️ **Este fichero está en la rama `claude` y en `develop`.** Al cambiarlo hay que cambiarlo
-> en las dos; el porqué está en el README de la rama `claude`.
+> en el proyecto. Vive en `dev` y baja a `test` y `prod` por las promociones normales.
 
-La memoria curada vive en `memoria/` (rama `claude`) y su copia local en `.claude/memory/`.
+La memoria curada vive **sólo** en `.claude/memory/`, que está gitignorado: es local a esta
+máquina y **no tiene copia en GitHub**. La rama `claude`, que era esa copia, se borró el
+2026-08-15 porque ya iba por detrás de la local.
 
 @.claude/memory/MEMORY.md
 
@@ -116,8 +115,8 @@ entornos**. Detalle en [[panel-de-sanity]].
 
 Heredadas de la metodología de `Portfolio`:
 
-1. **Contexto siempre a nivel de proyecto, nada global** — memorias y reglas viven en la rama
-   `claude` y en `.claude/` de este repo. (`.claude/` está gitignorado: es local a la máquina.)
+1. **Contexto siempre a nivel de proyecto, nada global** — memorias y reglas viven en `.claude/`
+   de este repo. (`.claude/` está gitignorado: es local a la máquina.)
 2. **Nunca subir secretos** — credenciales, keys, tokens y `.env` jamás se sincronizan con
    GitHub; al añadir uno nuevo se incluye en `.gitignore` **antes** de subir nada.
 3. **Claude nunca hace commit ni push** — modifica ficheros y **propone un mensaje de commit
@@ -126,8 +125,8 @@ Heredadas de la metodología de `Portfolio`:
    explícitamente el git y el alta en Vercel del montaje inicial.)_
 4. **Sincronizar antes de trabajar** — `fetch`/`pull` antes de empezar una modificación.
 5. **Rama por tarea, y la rama se BORRA al mergear** — rama con nombre representativo sacada de
-   `develop`; al terminar, `git merge --no-ff` en `develop`, push, y `git branch -d` +
-   `git push origin --delete`. **Nunca squash** en las promociones `develop` → `test` → `prod`.
+   `dev`; al terminar, `git merge --no-ff` en `dev`, push, y `git branch -d` +
+   `git push origin --delete`. **Nunca squash** en las promociones `dev` → `test` → `prod`.
 6. **Los despliegues se validan con un preview real de Vercel**, nunca con `vercel build` en
    local: en Windows falla por un bug del builder, no de la web.
 7. **`media/` no se sube.** Son 233 MB de originales de Instagram y está gitignorado. Lo que
@@ -135,24 +134,24 @@ Heredadas de la metodología de `Portfolio`:
 
 ### Modelo de ramas
 
-| Rama      | Para qué                                                            | Vercel                               |
-| --------- | ------------------------------------------------------------------- | ------------------------------------ |
-| `claude`  | Contexto, memorias y reglas locales. Sin código                     | **Nada.** No despliega               |
-| `develop` | Día a día: desarrollar, depurar y subir al repositorio sin publicar | **Nada.** No despliega               |
-| `test`    | Entorno de test                                                     | `cedecetest` → cedecetest.vercel.app |
-| `prod`    | Producción                                                          | `cedece` → cedece.vercel.app         |
+| Rama   | Para qué                                                            | Vercel                               |
+| ------ | ------------------------------------------------------------------- | ------------------------------------ |
+| `dev`  | Día a día: desarrollar, depurar y subir al repositorio sin publicar | **Nada.** No despliega               |
+| `test` | Entorno de test                                                     | `cedecetest` → cedecetest.vercel.app |
+| `prod` | Producción                                                          | `cedece` → cedece.vercel.app         |
 
-`main` se borró en el montaje inicial y la rama por defecto de GitHub es `prod`.
+`main` se borró en el montaje inicial y `claude` el 2026-08-15; la rama por defecto de GitHub
+es `prod`.
 Detalle en [[modelo-de-ramas]].
 
 ## 5. Protocolo de mantenimiento
 
 En **cada cambio relevante**, sin que se lo pidan:
 
-1. Actualizar las memorias afectadas en `memoria/` (rama `claude`) y su índice `MEMORY.md`.
-2. Actualizar este `CLAUDE.md` **en las dos ramas** si el cambio afecta a la estructura, el
-   stack, el estado o las convenciones.
-3. Actualizar el `README.md` de `develop` si el cambio afecta a algo que deba saber quien
+1. Actualizar las memorias afectadas en `.claude/memory/` y su índice `MEMORY.md`.
+2. Actualizar este `CLAUDE.md` si el cambio afecta a la estructura, el stack, el estado o las
+   convenciones.
+3. Actualizar el `README.md` de `dev` si el cambio afecta a algo que deba saber quien
    despliegue o edite contenido — en particular la sección «Pendiente».
 
 Regla de oro: **el contexto nunca debe quedar desactualizado respecto al estado real del
